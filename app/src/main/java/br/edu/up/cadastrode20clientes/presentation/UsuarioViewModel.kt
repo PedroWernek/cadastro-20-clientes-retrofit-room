@@ -1,29 +1,31 @@
 package br.edu.up.cadastrode20clientes.presentation
 
-import android.util.Log
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import br.edu.up.cadastrode20clientes.data.AppDatabase
 import br.edu.up.cadastrode20clientes.domain.Usuario
 import br.edu.up.cadastrode20clientes.domain.UsuarioDao
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
-class UsuarioViewModel {
-    fun buscarUsuarios(usuarioDao: UsuarioDao): List<Usuario> {
-        return try {
-            usuarioDao.getAllClientes()
-        } catch (e: Exception) {
-            Log.e("Erro ao buscar", "Erro ao buscar usuários: ${e.message}")
-            emptyList()
-        }
+class UsuarioViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val usuarioDao: UsuarioDao
+
+    init {
+        val db = AppDatabase.getDatabase(application)
+        usuarioDao = db.usuarioDao()
     }
-    // Função para inserir um usuário no banco de dados
-    suspend fun inserirUsuario(nome: String, email: String, username: String, usuarioDao: UsuarioDao) {
-        try {
-            usuarioDao.inserir(
-                Usuario(
-                    nome = nome, email = email
 
-                )
-            )
-        } catch (e: Exception) {
-            Log.e("Erro ao inserir", "Erro ao inserir usuário: ${e.message}")
+    fun getAllUsuarios(): Flow<List<Usuario>> {
+        return usuarioDao.getAllClientes()
+    }
+
+    fun inserirUsuario(nome: String, email: String, username: String) {
+        viewModelScope.launch {
+            val usuario = Usuario(nome = nome, email = email)
+            usuarioDao.inserir(usuario)
         }
     }
 }

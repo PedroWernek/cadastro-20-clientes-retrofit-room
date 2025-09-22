@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
-import br.edu.up.cadastrode20clientes.presentation.UsuarioViewModel
 import br.edu.up.cadastrode20clientes.presentation.navigation.AppNavGraph
 
 class MainActivity : ComponentActivity() {
@@ -14,8 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
-            val usuarioViewModel = UsuarioViewModel()
-            AppNavGraph(navController = navController, usuarioViewModel = usuarioViewModel)
+            AppNavGraph(navController = navController)
         }
     }
 }
