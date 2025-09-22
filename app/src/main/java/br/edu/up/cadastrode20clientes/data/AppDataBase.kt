@@ -1,9 +1,11 @@
-package br.edu.up.cadastrode20clientes
+package br.edu.up.cadastrode20clientes.data
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import br.edu.up.cadastrode20clientes.domain.UsuarioDao
+import br.edu.up.cadastrode20clientes.domain.Usuario
 
 @Database(entities = [Usuario::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {

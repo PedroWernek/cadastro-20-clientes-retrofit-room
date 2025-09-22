@@ -1,13 +1,12 @@
-package br.edu.up.cadastrode20clientes
+package br.edu.up.cadastrode20clientes.domain
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "usuario")
+@Entity(tableName = "usuarios")
 data class Usuario(
     @PrimaryKey(autoGenerate = true)
     val id: Int? = 0,
     val nome: String,
-    val username: String,
     val email: String
 )
