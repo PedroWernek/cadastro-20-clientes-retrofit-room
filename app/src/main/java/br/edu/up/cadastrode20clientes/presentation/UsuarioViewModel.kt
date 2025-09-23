@@ -39,15 +39,15 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
 
     // --- NOVA FUNÇÃO PARA USAR O RETROFIT ---
     // Esta função busca os usuários da API e os insere no banco de dados local.
+    // pedrowernek/cadastro-20-clientes-retrofit-room/cadastro-20-clientes-retrofit-room-8f95df7f70725c9a1f7be70dbdf82030e49a2970/app/src/main/java/br/edu/up/cadastrode20clientes/presentation/UsuarioViewModel.kt
     private fun fetchUsuariosFromApi() {
         viewModelScope.launch {
             try {
-                // Chama o método getUsuarios() da sua ApiService
-                val response = RetrofitInstance.api.getUsuarios().execute()
+                // Chama o método suspend diretamente
+                val response = RetrofitInstance.api.getUsuarios()
 
                 if (response.isSuccessful && response.body() != null) {
                     val usuariosDaApi = response.body()!!
-                    // Insere cada usuário recebido da API no banco de dados local
                     usuariosDaApi.forEach { usuario ->
                         usuarioDao.inserir(usuario)
                     }
@@ -56,10 +56,8 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
                     Log.e("UsuarioViewModel", "Erro na resposta da API: ${response.message()}")
                 }
             } catch (e: IOException) {
-                // Erro de rede (sem conexão, etc.)
                 Log.e("UsuarioViewModel", "Erro de rede: ${e.message}")
             } catch (e: HttpException) {
-                // Erro de HTTP (código 404, 500, etc.)
                 Log.e("UsuarioViewModel", "Erro HTTP: ${e.message}")
             }
         }
