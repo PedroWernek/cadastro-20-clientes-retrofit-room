@@ -4,7 +4,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
-    private const val BASE_URL = "<https://jsonplaceholder.typicode.com/>"
+    private const val BASE_URL = "<https://my-json-server.typicode.com/PedroWernek/cadastro-20-clientes-retrofit-room>"
 
     val api: ApiService by lazy {
         Retrofit.Builder()
