@@ -64,8 +64,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // --- Networking: Retrofit ---
-    implementation("com.squareup.retrofit2:retrofit:3.0.0")
-    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+// --- Networking: Retrofit ---
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     // --- Injeção de Dependência: Dagger ---
     implementation("com.google.dagger:dagger:2.57.1")
