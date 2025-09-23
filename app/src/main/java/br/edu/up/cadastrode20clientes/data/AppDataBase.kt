@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import br.edu.up.cadastrode20clientes.domain.UsuarioDao
 import br.edu.up.cadastrode20clientes.domain.Usuario
+import br.edu.up.cadastrode20clientes.domain.UsuarioDao
 
-@Database(entities = [Usuario::class], version = 1)
+@Database(entities = [Usuario::class], version = 1, exportSchema = false) // Modificado
 abstract class AppDatabase : RoomDatabase() {
     abstract fun usuarioDao(): UsuarioDao
 
@@ -21,7 +21,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration() // ADICIONADO: Facilita o desenvolvimento
+                    .build()
                 INSTANCE = instance
                 instance
             }

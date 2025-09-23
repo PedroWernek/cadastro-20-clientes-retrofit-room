@@ -1,6 +1,7 @@
 package br.edu.up.cadastrode20clientes.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -17,6 +18,10 @@ fun AppNavGraph(navController: NavHostController) {
         startDestination = Screen.Cadastro.route
     ) {
         composable(Screen.Cadastro.route) {
+            // REFORMULADO: Busca os dados da API de forma segura aqui
+            LaunchedEffect(key1 = Unit) {
+                usuarioViewModel.fetchUsuariosFromApi()
+            }
             CadastroUsuarioScreen(
                 usuarioViewModel = usuarioViewModel,
                 navController = navController,

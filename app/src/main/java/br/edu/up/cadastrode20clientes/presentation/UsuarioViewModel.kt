@@ -8,7 +8,9 @@ import br.edu.up.cadastrode20clientes.data.AppDatabase
 import br.edu.up.cadastrode20clientes.data.RetrofitInstance
 import br.edu.up.cadastrode20clientes.domain.Usuario
 import br.edu.up.cadastrode20clientes.domain.UsuarioDao
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull // ADICIONADO: Import correto
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -20,8 +22,6 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
     init {
         val db = AppDatabase.getDatabase(application)
         usuarioDao = db.usuarioDao()
-        // Chama a função para buscar dados da API assim que o ViewModel for criado
-        fetchUsuariosFromApi()
     }
 
     // Função para buscar dados do banco de dados local (Room) e exibir na tela
@@ -30,20 +30,27 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
     }
 
     // Função para inserir um usuário no banco de dados local
-    fun inserirUsuario(nome: String, email: String) { // Removido o 'username' que não era usado
-        viewModelScope.launch {
+    fun inserirUsuario(nome: String, email: String) {
+        if (nome.isBlank() || email.isBlank()) return
+
+        viewModelScope.launch(Dispatchers.IO) { // Use Dispatchers.IO para operações de banco
             val usuario = Usuario(nome = nome, email = email)
             usuarioDao.inserir(usuario)
         }
     }
 
-    // --- NOVA FUNÇÃO PARA USAR O RETROFIT ---
-    // Esta função busca os usuários da API e os insere no banco de dados local.
-    // pedrowernek/cadastro-20-clientes-retrofit-room/cadastro-20-clientes-retrofit-room-8f95df7f70725c9a1f7be70dbdf82030e49a2970/app/src/main/java/br/edu/up/cadastrode20clientes/presentation/UsuarioViewModel.kt
-    private fun fetchUsuariosFromApi() {
-        viewModelScope.launch {
+    // Função para buscar usuários da API e salvar no banco local
+    // Esta função agora é chamada pela UI para evitar bloqueio na inicialização
+    fun fetchUsuariosFromApi() {
+        viewModelScope.launch(Dispatchers.IO) { // Use Dispatchers.IO para operações de rede/banco
             try {
-                // Chama o método suspend diretamente
+                // CORRIGIDO: Sintaxe ajustada para usar o operador firstOrNull()
+                val userCount = usuarioDao.getAllClientes().firstOrNull()?.size ?: 0
+                if (userCount > 0) {
+                    Log.d("UsuarioViewModel", "Banco de dados já populado. Não buscando da API.")
+                    return@launch
+                }
+
                 val response = RetrofitInstance.api.getUsuarios()
 
                 if (response.isSuccessful && response.body() != null) {
@@ -56,9 +63,11 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
                     Log.e("UsuarioViewModel", "Erro na resposta da API: ${response.message()}")
                 }
             } catch (e: IOException) {
-                Log.e("UsuarioViewModel", "Erro de rede: ${e.message}")
+                Log.e("UsuarioViewModel", "Erro de rede (verifique a conexão e a permissão de INTERNET): ${e.message}")
             } catch (e: HttpException) {
                 Log.e("UsuarioViewModel", "Erro HTTP: ${e.message}")
+            } catch (e: Exception) {
+                Log.e("UsuarioViewModel", "Erro inesperado: ${e.message}")
             }
         }
     }
