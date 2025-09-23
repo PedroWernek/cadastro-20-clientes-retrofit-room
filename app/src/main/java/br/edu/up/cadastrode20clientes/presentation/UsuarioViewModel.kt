@@ -10,7 +10,7 @@ import br.edu.up.cadastrode20clientes.domain.Usuario
 import br.edu.up.cadastrode20clientes.domain.UsuarioDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull // ADICIONADO: Import correto
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -24,33 +24,37 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
         usuarioDao = db.usuarioDao()
     }
 
-    // Função para buscar dados do banco de dados local (Room) e exibir na tela
     fun getAllUsuarios(): Flow<List<Usuario>> {
         return usuarioDao.getAllClientes()
     }
 
-    // Função para inserir um usuário no banco de dados local
     fun inserirUsuario(nome: String, email: String) {
-        if (nome.isBlank() || email.isBlank()) return
+        if (nome.isBlank() || email.isBlank()) {
+            Log.w("UsuarioViewModel", "Tentativa de inserir usuário com campos vazios.")
+            return
+        }
 
-        viewModelScope.launch(Dispatchers.IO) { // Use Dispatchers.IO para operações de banco
+        // Garante que a inserção ocorra em segundo plano (IO Dispatcher)
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.d("UsuarioViewModel", "Iniciando inserção do usuário: $nome")
             val usuario = Usuario(nome = nome, email = email)
             usuarioDao.inserir(usuario)
+            Log.d("UsuarioViewModel", "Usuário $nome inserido com sucesso.")
         }
     }
 
-    // Função para buscar usuários da API e salvar no banco local
-    // Esta função agora é chamada pela UI para evitar bloqueio na inicialização
     fun fetchUsuariosFromApi() {
-        viewModelScope.launch(Dispatchers.IO) { // Use Dispatchers.IO para operações de rede/banco
+        // Garante que a verificação e a chamada de rede ocorram em segundo plano
+        viewModelScope.launch(Dispatchers.IO) {
             try {
-                // CORRIGIDO: Sintaxe ajustada para usar o operador firstOrNull()
+                // CORREÇÃO: A verificação do banco de dados está DENTRO da corrotina
                 val userCount = usuarioDao.getAllClientes().firstOrNull()?.size ?: 0
                 if (userCount > 0) {
                     Log.d("UsuarioViewModel", "Banco de dados já populado. Não buscando da API.")
                     return@launch
                 }
 
+                Log.d("UsuarioViewModel", "Banco de dados vazio. Buscando usuários da API.")
                 val response = RetrofitInstance.api.getUsuarios()
 
                 if (response.isSuccessful && response.body() != null) {
@@ -62,12 +66,9 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
                 } else {
                     Log.e("UsuarioViewModel", "Erro na resposta da API: ${response.message()}")
                 }
-            } catch (e: IOException) {
-                Log.e("UsuarioViewModel", "Erro de rede (verifique a conexão e a permissão de INTERNET): ${e.message}")
-            } catch (e: HttpException) {
-                Log.e("UsuarioViewModel", "Erro HTTP: ${e.message}")
             } catch (e: Exception) {
-                Log.e("UsuarioViewModel", "Erro inesperado: ${e.message}")
+                // Log genérico para qualquer tipo de erro
+                Log.e("UsuarioViewModel", "Ocorreu um erro ao buscar dados da API.", e)
             }
         }
     }

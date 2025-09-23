@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import br.edu.up.cadastrode20clientes.domain.Usuario
 import br.edu.up.cadastrode20clientes.domain.UsuarioDao
 
-@Database(entities = [Usuario::class], version = 1, exportSchema = false)
+@Database(entities = [Usuario::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun usuarioDao(): UsuarioDao
 
@@ -23,7 +23,6 @@ abstract class AppDatabase : RoomDatabase() {
                     "app_database"
                 )
                     .fallbackToDestructiveMigration()
-                    .allowMainThreadQueries() // <-- ESTA É A LINHA QUE RESOLVE O PROBLEMA
                     .build()
                 INSTANCE = instance
                 instance
