@@ -64,12 +64,12 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // --- Networking: Retrofit ---
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
 
     // --- Injeção de Dependência: Dagger ---
-    implementation("com.google.dagger:dagger:2.51.1")
-    ksp("com.google.dagger:dagger-compiler:2.51.1")
+    implementation("com.google.dagger:dagger:2.57.1")
+    ksp("com.google.dagger:dagger-compiler:2.57.1")
 
     // --- Banco de Dados Local: Room ---
     val room_version = "2.6.1"
