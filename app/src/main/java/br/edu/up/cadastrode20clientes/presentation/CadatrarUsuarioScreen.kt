@@ -12,7 +12,6 @@ import androidx.navigation.NavController
 fun CadastroUsuarioScreen(navController: NavController, usuarioViewModel: UsuarioViewModel) {
     var nome by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -45,7 +44,7 @@ fun CadastroUsuarioScreen(navController: NavController, usuarioViewModel: Usuari
             Button(
                 onClick = {
                     if (nome.isNotBlank() && email.isNotBlank()) {
-                        usuarioViewModel.inserirUsuario(nome, email, username)
+                        usuarioViewModel.inserirUsuario(nome, email)
                         nome = ""
                         email = ""
                     }

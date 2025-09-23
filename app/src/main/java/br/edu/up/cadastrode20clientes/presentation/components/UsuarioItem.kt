@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import br.edu.up.cadastrode20clientes.domain.Usuario
 
-// Composable que exibe os detalhes de cada usuário
 @Composable
 fun UsuarioItem(usuario: Usuario) {
     Column(modifier = Modifier
